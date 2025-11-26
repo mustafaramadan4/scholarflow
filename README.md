@@ -1,22 +1,39 @@
+# ScholarFlow
 
-# ScholarFlow (scaffold)
+ScholarFlow is a scholarship matching and application management system. It connects students with scholarships and uses AI to assist in drafting application essays.
 
-This repo contains a minimal scaffold for ScholarFlow:
+## Architecture Overview
 
-- backend: FastAPI app (simplified) in `backend/app`
-- frontend: Next.js demo app in `frontend`
-- docker-compose to run a local Postgres, backend, and frontend
+The application is split into a **Next.js Frontend** (Port 3000) and a **FastAPI Backend** (Port 8000).
 
-## Quick start (dev)
-1. Ensure Docker and Docker Compose are installed.
-2. From the project root:
-   ```
-   docker compose up --build
-   ```
-3. Backend: http://localhost:8000
-4. Frontend: http://localhost:3000
+### Core Data Models
+* **`User`**: Authentication and roles.
+* **`StudentProfile`**: Academic data (GPA, Major) used for matching.
+* **`Scholarship`**: Financial opportunities.
+* **`Application`**: Links users to scholarships.
 
-## Notes
-- The backend creates tables on startup (for development). Replace with alembic migrations for production.
-- The essay generation endpoint is a stub; integrate OpenAI or another LLM for real drafts.
-- Replace SECRET_KEY and DATABASE_URL in `backend/.env.example`.
+## Startup Checklist
+
+1.  **Build and Start Containers**
+    ```bash
+    docker compose up --build
+    ```
+
+2.  **Seed Dummy Data (Required)**
+    The database starts empty. Open a new terminal and run:
+    ```bash
+    docker compose exec backend python seed.py
+    ```
+    * **User**: `student@scholarflow.com` / `password123`
+    * **Data**: Populates scholarships for search.
+
+3.  **Enable Real AI (Optional)**
+    To use GPT-4 instead of the stub, add your API key to `backend/.env` (or `backend/app/core_config.py`):
+    ```bash
+    OPENAI_API_KEY=sk-your-key-here
+    ```
+    Then restart the backend.
+
+## Access
+* Frontend: http://localhost:3000
+* Backend Docs: http://localhost:8000/docs
