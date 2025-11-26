@@ -1,4 +1,3 @@
-
 import sqlalchemy as sa
 from .db import Base
 from sqlalchemy.dialects.postgresql import UUID, JSONB
@@ -6,6 +5,7 @@ import uuid
 from sqlalchemy.sql import func
 
 class User(Base):
+    """Represents a registered user of the platform."""
     __tablename__ = "users"
     id = sa.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     email = sa.Column(sa.Text, unique=True, nullable=False)
@@ -16,6 +16,7 @@ class User(Base):
     updated_at = sa.Column(sa.TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now())
 
 class StudentProfile(Base):
+    """Detailed academic profile linked to a User."""
     __tablename__ = "student_profiles"
     id = sa.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id = sa.Column(UUID(as_uuid=True), sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
@@ -33,6 +34,7 @@ class StudentProfile(Base):
     updated_at = sa.Column(sa.TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now())
 
 class Scholarship(Base):
+    """A financial aid opportunity."""
     __tablename__ = "scholarships"
     id = sa.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     title = sa.Column(sa.Text, nullable=False)
@@ -51,6 +53,7 @@ class Scholarship(Base):
     updated_at = sa.Column(sa.TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now())
 
 class Application(Base):
+    """Links a StudentProfile to a Scholarship."""
     __tablename__ = "applications"
     id = sa.Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     profile_id = sa.Column(UUID(as_uuid=True), sa.ForeignKey("student_profiles.id", ondelete="CASCADE"))
