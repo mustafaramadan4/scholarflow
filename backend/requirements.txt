@@ -10,3 +10,4 @@ passlib[bcrypt]
 httpx
 python-dotenv
 pydantic==1.10.15
+openai>=1.0.0
