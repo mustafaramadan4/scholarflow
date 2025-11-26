@@ -1,0 +1,52 @@
+import { useState } from 'react';
+import { registerUser } from '../utils/api';
+import Navbar from '../components/Navbar';
+
+export default function Register() {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    try {
+      const data = await registerUser(email, password, name);
+      setMessage('Registration successful: ' + JSON.stringify(data));
+    } catch (err) {
+      setMessage('Registration failed: ' + err.message);
+    }
+  };
+
+  return (
+    <div style={{ padding: 40 }}>
+      <Navbar />
+      <h1>Register</h1>
+      <form onSubmit={handleRegister}>
+        <input
+          type="text"
+          placeholder="Name"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          style={{ marginBottom: 10, display: 'block' }}
+        />
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          style={{ marginBottom: 10, display: 'block' }}
+        />
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          style={{ marginBottom: 10, display: 'block' }}
+        />
+        <button type="submit">Register</button>
+      </form>
+      {message && <p>{message}</p>}
+    </div>
+  );
+}

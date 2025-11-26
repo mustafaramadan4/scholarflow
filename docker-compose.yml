@@ -1,0 +1,48 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: scholarflow-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+    # Reads the credentials for the backend app
+    env_file: 
+      - ./backend/app/.env
+    depends_on:
+      db:
+        condition: service_healthy 
+
+  db:
+    image: postgres:15
+    container_name: scholarflow-db
+    # 🔑 CRITICAL: Tell the DB service where to find the variables
+    env_file:
+      - ./backend/app/.env
+    # 🔑 CRITICAL: Map your custom variables to the Postgres required variables
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      # 🔑 FINAL FIX: Use hardcoded values to bypass variable interpolation issues in CMD-SHELL.
+      test: ["CMD-SHELL", "pg_isready -U postgres -d scholarflow"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+  
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://backend:8000
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:
