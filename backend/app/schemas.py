@@ -1,22 +1,20 @@
-
-from pydantic import BaseModel, EmailStr
-from typing import Optional, Any, List
+from pydantic import BaseModel
+from typing import Optional, Any
 from uuid import UUID
 from datetime import datetime
 
 class UserCreate(BaseModel):
-    email: str  # was EmailStr
+    email: str 
     password: str
     role: str
     name: Optional[str]
 
 class UserOut(BaseModel):
     id: UUID
-    email: str  # was EmailStr
+    email: str 
     name: Optional[str]
     role: str
     created_at: datetime
-
     class Config:
         orm_mode = True
 
@@ -35,7 +33,6 @@ class StudentProfileOut(StudentProfileCreate):
     user_id: UUID
     created_at: datetime
     updated_at: datetime
-
     class Config:
         orm_mode = True
 
@@ -47,7 +44,6 @@ class ScholarshipOut(BaseModel):
     amount_max: Optional[int]
     deadline: Optional[datetime]
     is_local: Optional[bool]
-
     class Config:
         orm_mode = True
 
@@ -60,7 +56,6 @@ class ApplicationOut(BaseModel):
     profile_id: UUID
     scholarship_id: UUID
     status: str
-
     class Config:
         orm_mode = True
 
@@ -74,6 +69,5 @@ class EssayRequest(BaseModel):
 class EssayResponse(BaseModel):
     essay_id: str
     text: str
-
     class Config:
-        orm_mode = True # Use orm_mode if this will interact with a database model later
+        orm_mode = True
