@@ -1,5 +1,15 @@
+import '../styles.css';
+import Layout from '../components/Layout';
+import AuthGuard from '../components/AuthGuard';
+import { Toaster } from 'react-hot-toast';
 
-import '../styles.css'
-export default function App({ Component, pageProps }) {
-  return <Component {...pageProps} />
+export default function MyApp({ Component, pageProps }) {
+  return (
+    <AuthGuard>
+      <Layout>
+        <Toaster position="top-right" />
+        <Component {...pageProps} />
+      </Layout>
+    </AuthGuard>
+  );
 }
