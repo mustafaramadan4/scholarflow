@@ -8,7 +8,7 @@ from app.models import Scholarship, User
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 users_data = [
-    {"email": "student@scholarflow.com", "password": "password123", "name": "Demo Student", "role": "student"},
+    {"email": "student@scholarflow.com", "password": "123abc", "name": "Demo Student", "role": "student"},
 ]
 
 scholarships_data = [

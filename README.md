@@ -24,7 +24,7 @@ The application is split into a **Next.js Frontend** (Port 3000) and a **FastAPI
     ```bash
     docker compose exec backend python seed.py
     ```
-    * **User**: `student@scholarflow.com` / `password123`
+    * **User**: `student@scholarflow.com` / `123abc`
     * **Data**: Populates scholarships for search.
 
 3.  **Enable Real AI (Optional)**

@@ -17,14 +17,16 @@ services:
   db:
     image: postgres:15
     container_name: scholarflow-db
+    ports:
+      - "5432:5432"
     # 🔑 CRITICAL: Tell the DB service where to find the variables
     env_file:
       - ./backend/app/.env
     # 🔑 CRITICAL: Map your custom variables to the Postgres required variables
     environment:
-      - POSTGRES_DB=${DB_NAME}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=scholarflow
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
