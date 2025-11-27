@@ -11,9 +11,21 @@ export default function Login() {
     e.preventDefault();
     try {
       const data = await loginUser(email, password);
+      
+      // 1. CLEAR OLD STATE: Just in case, clear any old token before setting the new one
+      localStorage.removeItem('scholarflow_token'); 
+      
       localStorage.setItem('scholarflow_token', data.token);
       router.push('/scholarships');
-    } catch (err) { alert('Login failed'); }
+    } catch (err) { 
+      // 2. CRITICAL: Clear the token on failure as well.
+      // This stops the Scholarships page logic from seeing a bad token and redirecting.
+      localStorage.removeItem('scholarflow_token'); 
+      
+      // Customize error message for better UX
+      const errorMessage = err.response?.data?.detail || 'Login failed. Please check your credentials.';
+      alert(errorMessage); 
+    }
   };
 
   return (
