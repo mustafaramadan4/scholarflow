@@ -5,8 +5,9 @@ from ..schemas import StudentProfileCreate, StudentProfileOut
 from ..models import StudentProfile
 from ..dependencies import get_db, get_current_user_id
 
-router = APIRouter()
-
+router = APIRouter(
+    tags=["profiles"]
+)
 @router.post("/", response_model=StudentProfileOut)
 async def create_or_update_profile(payload: StudentProfileCreate, user_id: str = Depends(get_current_user_id), db: AsyncSession = Depends(get_db)):
     stmt = select(StudentProfile).where(StudentProfile.user_id == user_id)
