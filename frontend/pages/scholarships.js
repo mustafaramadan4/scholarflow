@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { searchScholarships, createApplication, getMyProfile } from '../utils/api'; 
+import { searchScholarships, createApplication, getMyProfile, getMyApplications } from '../utils/api'; 
 import toast from 'react-hot-toast';
-import { useRouter } from 'next/router'; // <-- Added Router
+import { useRouter } from 'next/router';
 
 export default function Scholarships() {
   const [scholarships, setScholarships] = useState([]);
@@ -10,81 +10,76 @@ export default function Scholarships() {
   const [profileId, setProfileId] = useState(null); 
   const [appliedIds, setAppliedIds] = useState([]);
   
-  const router = useRouter(); // <-- Initialize Router
+  const router = useRouter();
 
-  // --- Authentication and Data Initialization ---
   useEffect(() => { 
-    
-    // 1. Check for token immediately
-    const token = localStorage.getItem('scholarflow_token');
-    
-    // if (!token) {
-    //     // If no token exists, redirect to login
-    //     toast.error("Authentication required. Redirecting to login.");
-    //     router.push('/login');
-    //     return; 
-    // }
+    initData();
+  }, [router]);
 
-    // 2. If token exists, load user profile (authenticated call)
-    loadProfile(); 
-    
-    // 3. Load scholarships (can run in parallel/asynchronously)
-    loadScholarships(); 
-
-  }, [router]); 
+  // --- Load profile and applications ---
+  const initData = async () => {
+    await loadProfile();
+    await loadScholarships();
+    await loadAppliedApplications();
+  }
 
   const loadProfile = async () => {
     try {
-      // This call should succeed if the token is valid
       const profile = await getMyProfile();
-      setProfileId(profile.id); // Assuming 'profile.id' is the StudentProfile ID
+      setProfileId(profile.id);
     } catch (err) {
-      // If the backend returns a 401 (Unauthorized), the token is bad.
-      toast.error("Session expired or token invalid. Redirecting to login.");
-      
-      // CRITICAL: Clear the bad token to prevent infinite loops
-      localStorage.removeItem('scholarflow_token');
-      // router.push('/login');
+      if (err.response?.status === 404) {
+        toast.error("Please create your profile before applying.");
+        router.push("/profile");
+        return; 
+      }
+      if (err.response?.status === 401) {
+        toast.error("Session expired or token invalid. Redirecting to login.");
+        localStorage.removeItem('scholarflow_token');
+        router.push("/login");
+        return;
+      }
+      toast.error("Failed to load profile.");
     }
   };
-  
+
   const loadScholarships = async (q = "") => {
     try { 
       setLoading(true); 
       setScholarships(await searchScholarships(q)); 
-    }
-    catch (err) { 
+    } catch (err) { 
       toast.error("Failed to load scholarships"); 
-    }
-    finally { 
+    } finally { 
       setLoading(false); 
     }
   };
 
-  // --- Application Submission Logic ---
+  // --- Load already applied scholarships ---
+  const loadAppliedApplications = async () => {
+    try {
+      const apps = await getMyApplications();
+      const appliedIds = apps.map(app => app.scholarship_id);
+      setAppliedIds(appliedIds);
+    } catch (err) {
+      console.error("Failed to load applied scholarships:", err);
+    }
+  }
+
   const handleApply = async (scholarshipId) => { 
-    // CRITICAL CHECK: Ensure profileId is available before API call
     if (!profileId) {
       toast.error('User profile not loaded. Cannot apply.');
       return;
     }
 
     try {
-      // Send both required IDs to the backend
-      await createApplication(profileId, scholarshipId);
-      
-      // Update local state to track this application ID
+      await createApplication(scholarshipId);
       setAppliedIds(prevIds => [...prevIds, scholarshipId]);
-      
       toast.success('Application submitted successfully!');
-    }
-    catch (err) { 
-      // Catches potential 422 validation errors or other application failures
+    } catch (err) { 
       toast.error('Failed to apply. Check your profile.'); 
     }
   };
 
-  // --- JSX Render ---
   return (
     <div>
       <h1>Find Scholarships</h1>
@@ -96,27 +91,26 @@ export default function Scholarships() {
         <div style={{ display: 'grid', gap: 20 }}>
           {scholarships.map((s) => {
             const isApplied = appliedIds.includes(s.id); 
-
             return (
-                <div key={s.id} style={{ border: '1px solid #ddd', padding: 20, borderRadius: 8 }}>
-                    <h3>{s.title}</h3>
-                    <p>{s.description}</p>
-                    <p><strong>Amount:</strong> ${s.amount_min} - ${s.amount_max}</p>
-                    <button 
-                        onClick={() => handleApply(s.id)} 
-                        disabled={isApplied} 
-                        style={{ 
-                            backgroundColor: isApplied ? '#ccc' : '#0070f3', 
-                            color: 'white', 
-                            border: 'none', 
-                            padding: '10px 20px', 
-                            cursor: isApplied ? 'default' : 'pointer', 
-                            borderRadius: 4 
-                        }}
-                    >
-                        {isApplied ? 'Applied' : 'Apply Now'} 
-                    </button>
-                </div>
+              <div key={s.id} style={{ border: '1px solid #ddd', padding: 20, borderRadius: 8 }}>
+                <h3>{s.title}</h3>
+                <p>{s.description}</p>
+                <p><strong>Amount:</strong> ${s.amount_min} - ${s.amount_max}</p>
+                <button 
+                  onClick={() => handleApply(s.id)} 
+                  disabled={isApplied} 
+                  style={{ 
+                    backgroundColor: isApplied ? '#ccc' : '#0070f3', 
+                    color: 'white', 
+                    border: 'none', 
+                    padding: '10px 20px', 
+                    cursor: isApplied ? 'default' : 'pointer', 
+                    borderRadius: 4 
+                  }}
+                >
+                  {isApplied ? 'Applied' : 'Apply Now'} 
+                </button>
+              </div>
             );
           })}
         </div>

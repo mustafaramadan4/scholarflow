@@ -5,17 +5,35 @@ from uuid import UUID
 from ..models import Application, StudentProfile
 from ..schemas import ApplicationCreate, ApplicationOut
 from ..dependencies import get_db, get_current_user_id
+from pydantic import BaseModel
+from uuid import UUID
 
+class ApplyRequest(BaseModel):
+    scholarship_id: UUID
+    
 router = APIRouter()
 
 @router.post("/", response_model=ApplicationOut)
-async def create_application(scholarship_id: UUID, user_id: str = Depends(get_current_user_id), db: AsyncSession = Depends(get_db)):
+async def create_application(
+    payload: ApplyRequest,
+    user_id: str = Depends(get_current_user_id),
+    db: AsyncSession = Depends(get_db)
+):
+    scholarship_id = payload.scholarship_id
+
     stmt = select(StudentProfile).where(StudentProfile.user_id == user_id)
     result = await db.execute(stmt)
     profile = result.scalar_one_or_none()
+
     if not profile:
         raise HTTPException(status_code=400, detail="You must create a student profile before applying.")
-    app_rec = Application(profile_id=profile.id, scholarship_id=scholarship_id, status="submitted")
+
+    app_rec = Application(
+        profile_id=profile.id,
+        scholarship_id=scholarship_id,
+        status="submitted"
+    )
+
     db.add(app_rec)
     await db.commit()
     await db.refresh(app_rec)

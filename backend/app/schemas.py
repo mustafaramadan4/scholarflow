@@ -71,3 +71,6 @@ class EssayResponse(BaseModel):
     text: str
     class Config:
         orm_mode = True
+
+class ApplyRequest(BaseModel):
+    scholarship_id: UUID
