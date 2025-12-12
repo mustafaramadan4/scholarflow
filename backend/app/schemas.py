@@ -3,6 +3,43 @@ from typing import Optional, Any
 from uuid import UUID
 from datetime import datetime
 
+# This matches the JSON object your frontend "OnboardingWizard" sends
+class StudentProfileCreate(BaseModel):
+    # Role & Account
+    role: str
+    gradeLevel: str  # Matches frontend "gradeLevel"
+    state: str
+    
+    # Profile Basics
+    fullName: str
+    highSchool: str
+    gpaUnweighted: Optional[float] = None
+    gpaWeighted: Optional[float] = None
+    major: str
+    incomeRange: Optional[str] = None
+    
+    # Eligibility
+    citizenship: Optional[str] = None
+    firstGen: bool = False
+    ethnicity: List[str] = []       # Frontend sends array
+    extracurriculars: List[str] = [] 
+    sports: List[str] = []
+    
+    # Achievements
+    satScore: Optional[int] = None
+    actScore: Optional[int] = None
+    apCount: Optional[int] = None
+    honors: Optional[str] = None
+    volunteerHours: Optional[int] = None
+    
+    # Documents (Just storing filenames for now)
+    transcriptFile: Optional[str] = None
+    resumeFile: Optional[str] = None
+    
+    # Preferences
+    weeklyHours: Optional[int] = 0
+    # Add other preference fields if your frontend sends them
+
 class UserCreate(BaseModel):
     email: str 
     password: str
