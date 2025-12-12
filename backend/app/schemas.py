@@ -1,12 +1,3 @@
-You have duplicates in your file (two conflicting StudentProfileCreate classes) and missing imports (List).
-
-Here is the cleaned, merged, and fixed schemas.py.
-
-I have used Pydantic's Field(alias="...") to map your Frontend's camelCase variable names to your Backend's snake_case database names. This handles the conversion automatically.
-
-Replaces your backend/app/schemas.py
-Python
-
 from pydantic import BaseModel, Field
 from typing import Optional, Any, List  # Added List import
 from uuid import UUID
