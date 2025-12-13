@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from ..schemas import UserCreate, UserOut
-from ..models import User
+from app.schemas import UserCreate, UserOut
+from app.models import User
 from passlib.context import CryptContext
-from ..auth import create_access_token
+from app.auth import create_access_token
 from pydantic import BaseModel
-from ..dependencies import get_db
+from app.dependencies import get_db
 
 router = APIRouter()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

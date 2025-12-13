@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from .db import engine, Base
-from .routers import auth, profiles, scholarships, applications, essays
+from app.db import engine, Base
+from app.routers import auth, profiles, scholarships, applications, essays
 
 app = FastAPI(title="ScholarFlow API")
 

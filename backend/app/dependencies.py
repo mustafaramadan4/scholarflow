@@ -1,8 +1,8 @@
 from typing import AsyncGenerator
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
-from .db import AsyncSessionLocal
-from .auth import verify_token
+from app.db import AsyncSessionLocal
+from app.auth import verify_token
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
     async with AsyncSessionLocal() as session:

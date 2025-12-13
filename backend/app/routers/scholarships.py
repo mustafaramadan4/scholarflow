@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from ..models import Scholarship
-from ..schemas import ScholarshipOut
-from ..dependencies import get_db
+from app.models import Scholarship
+from app.schemas import ScholarshipOut
+from app.dependencies import get_db
 
 router = APIRouter()
 

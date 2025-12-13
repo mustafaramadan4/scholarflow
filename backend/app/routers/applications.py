@@ -2,9 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from uuid import UUID
-from ..models import Application, StudentProfile
-from ..schemas import ApplicationCreate, ApplicationOut
-from ..dependencies import get_db, get_current_user_id
+from app.schemas import ApplicationCreate, ApplicationOut
+from app.models import Application, StudentProfile
+from app.dependencies import get_db, get_current_user_id
 from pydantic import BaseModel
 from uuid import UUID
 
