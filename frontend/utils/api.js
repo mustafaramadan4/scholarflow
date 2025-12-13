@@ -19,7 +19,46 @@ export const loginUser = async (email, password) => {
 };
 export const registerUser = async (email, password, name) => (await api.post('/auth/signup', { email, password, name, role: 'student' })).data;
 export const getMyProfile = async () => (await api.get('/profiles/me')).data;
-export const createOrUpdateProfile = async (data) => (await api.post('/profiles/', data)).data;
+export const createOrUpdateProfile = async (data) => {
+  const body = {
+    // Role & Account
+    gradeLevel: data.gradeLevel,
+    state: data.state,
+
+    // Profile Basics
+    fullName: data.fullName,
+    highSchool: data.highSchool,
+    major: data.major,             // maps to backend "intended_major"
+    
+    // GPA
+    gpaUnweighted: data.gpaUnweighted,
+    gpaWeighted: data.gpaWeighted,
+
+    // Eligibility
+    citizenship: data.citizenship,
+    firstGen: data.firstGen,
+    ethnicity: data.ethnicity,
+    extracurriculars: data.extracurriculars,
+    sports: data.sports,
+
+    // Achievements
+    satScore: data.satScore,
+    actScore: data.actScore,
+    apCount: data.apCount,
+    honors: data.honors,
+    volunteerHours: data.volunteerHours,
+
+    // Documents
+    transcriptFile: data.transcriptFile,
+    resumeFile: data.resumeFile,
+
+    // Preferences
+    weeklyHours: data.weeklyHours,
+  };
+
+  const res = await api.post('/profiles/', body);
+  return res.data;
+};
 export const searchScholarships = async (q = "") => (await api.get(`/scholarships/search?q=${q}`)).data;
 export const createApplication = async (scholarshipId) =>
   (await api.post('/applications/', { scholarship_id: scholarshipId })).data;
