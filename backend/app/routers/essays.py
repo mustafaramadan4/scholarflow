@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from ..schemas import EssayRequest, EssayResponse
+from app.schemas import EssayRequest, EssayResponse
 from ..core_config import settings
 import openai
 

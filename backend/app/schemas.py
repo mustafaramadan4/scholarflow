@@ -23,31 +23,33 @@ class UserOut(BaseModel):
 
 # --- PROFILE SCHEMAS ---
 
+from pydantic import BaseModel, Field
+from typing import Optional, List
+
 class StudentProfileCreate(BaseModel):
     # Role & Account
-    # We map frontend "gradeLevel" -> backend "grade_level"
-    grade_level: str = Field(alias="gradeLevel")
-    state: str
+    grade_level: Optional[str] = Field(None, alias="gradeLevel")
+    state: Optional[str] = None
     
     # Profile Basics
-    full_name: str = Field(alias="fullName")
-    high_school: str = Field(alias="highSchool")
+    full_name: Optional[str] = Field(None, alias="fullName")
+    high_school: Optional[str] = Field(None, alias="highSchool")
     
-    # Merging GPA logic
+    # GPA
     gpa_unweighted: Optional[float] = Field(None, alias="gpaUnweighted")
     gpa_weighted: Optional[float] = Field(None, alias="gpaWeighted")
     
-    # Mapping "major" from frontend to "intended_major" for backend clarity
-    intended_major: str = Field(alias="major")
+    # Major
+    intended_major: Optional[str] = Field(None, alias="major")
     
     income_range: Optional[str] = Field(None, alias="incomeRange")
     
     # Eligibility
     citizenship: Optional[str] = None
-    first_gen: bool = Field(False, alias="firstGen")
-    ethnicity: List[str] = []       
-    extracurriculars: List[str] = [] 
-    sports: List[str] = []
+    first_gen: Optional[bool] = Field(False, alias="firstGen")
+    ethnicity: Optional[List[str]] = []
+    extracurriculars: Optional[List[str]] = []
+    sports: Optional[List[str]] = []
     
     # Achievements
     sat_score: Optional[int] = Field(None, alias="satScore")
@@ -57,7 +59,6 @@ class StudentProfileCreate(BaseModel):
     volunteer_hours: Optional[int] = Field(None, alias="volunteerHours")
     
     # Documents
-    # Mapping frontend "transcriptFile" to your existing "transcript_url" concept
     transcript_url: Optional[str] = Field(None, alias="transcriptFile")
     resume_url: Optional[str] = Field(None, alias="resumeFile")
     
@@ -65,10 +66,7 @@ class StudentProfileCreate(BaseModel):
     weekly_hours: Optional[int] = Field(0, alias="weeklyHours")
 
     class Config:
-        # CRITICAL: This allows the backend to accept "gradeLevel" (from frontend)
-        # OR "grade_level" (from python code) interchangeably.
-        allow_population_by_field_name = True 
-        # Note: If you are using Pydantic V2, rename this to 'populate_by_name = True'
+        allow_population_by_field_name = True
 
 # Output schema inherits from Create, so it includes all the fields above automatically
 class StudentProfileOut(StudentProfileCreate):
