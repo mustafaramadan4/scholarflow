@@ -2,8 +2,10 @@ import asyncio
 import uuid
 from datetime import datetime, timedelta
 from passlib.context import CryptContext
-from app.db import AsyncSessionLocal
+from app.db import AsyncSessionLocal, init_db
 from app.models import Scholarship, User
+from sqlalchemy import select
+
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -18,25 +20,40 @@ scholarships_data = [
     {"title": "Women in Tech Scholarship", "description": "Empowering the next generation of female software engineers and data scientists.", "amount_min": 2000, "amount_max": 4000, "is_local": False}
 ]
 
-async def seed():
+async def seed_db():
+    await init_db()
+
     async with AsyncSessionLocal() as session:
+
+        # 🔒 Guard: do not reseed if users exist
+        existing = await session.execute(select(User))
+        if existing.first():
+            print("🌱 Seed skipped — data already exists")
+            return
+
         print("--- Seeding Users ---")
         for u in users_data:
             hashed = pwd_context.hash(u["password"])
-            user = User(id=uuid.uuid4(), email=u['email'], password_hash=hashed, name=u['name'], role=u['role'])
+            user = User(
+                email=u["email"],
+                password_hash=hashed,
+                name=u["name"],
+                role=u["role"]
+            )
             session.add(user)
 
         print("--- Seeding Scholarships ---")
         for s in scholarships_data:
             scholarship = Scholarship(
-                id=uuid.uuid4(), title=s["title"], description=s["description"],
-                amount_min=s["amount_min"], amount_max=s["amount_max"],
-                is_local=s["is_local"], deadline=datetime.now() + timedelta(days=90)
+                title=s["title"],
+                description=s["description"],
+                amount_min=s["amount_min"],
+                amount_max=s["amount_max"],
+                is_local=s["is_local"],
+                deadline=datetime.now() + timedelta(days=90)
             )
             session.add(scholarship)
-        
-        await session.commit()
-        print("SUCCESS: Database seeded.")
 
-if __name__ == "__main__":
-    asyncio.run(seed())
+        await session.commit()
+        print("✅ Database seeded.")
+
