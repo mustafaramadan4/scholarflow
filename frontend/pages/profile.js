@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { getMyProfile, createOrUpdateProfile } from '../utils/api';
-import ProfileSetup from './profile-setup';
+import ProfileSetup from './profile-setup/step-1';
 
 export default function Profile() {
   const [loading, setLoading] = useState(true);
