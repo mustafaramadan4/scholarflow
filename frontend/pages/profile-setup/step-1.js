@@ -8,6 +8,7 @@ import Achievements from '../components/Achievements';
 import Documents from '../components/Documents';
 import Preferences from '../components/Preferences';
 import { createOrUpdateProfile } from '../../utils/api';
+import OnboardingLayout from '../../components/layout/OnboardingLayout';
 
 export default function ProfileSetup() {
   const [step, setStep] = useState(0);
@@ -40,8 +41,8 @@ const submitProfile = async () => {
   ];
 
   return (
-    <div className="max-w-2xl mx-auto p-4">
+    <OnboardingLayout>
       {steps[step]}
-    </div>
+    </OnboardingLayout>
   );
 }
